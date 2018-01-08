@@ -1,12 +1,13 @@
 <template>
   <div>
-    <header-component></header-component>
+    <header-component></header-component>    
     <div class="container min-full-height">
-      <div class="main-content row">
+      <div class="main-content row">        
         <div :class="[state != 0 || todolistvisible ? 'col-sm-12 col-md-6 col-lg-5' : 'col-2']">
           <div v-if="state != 0">
             <div v-if="!showKittens">
-              <img class="img-fluid rounded" :src="chosenWorkout.picture" :alt="chosenWorkout.name">
+              <clip-loader :loading="loadingWorkoutImage"></clip-loader>
+              <img v-show="loadedWorkoutImage" class="img-fluid rounded" @load="handleLoadedImage" :src="chosenWorkout.picture" :alt="chosenWorkout.name">
               <h2 class="title">{{ chosenWorkout.name }}</h2>
               <p class="description">
                 {{ chosenWorkout.description }}
@@ -46,6 +47,7 @@
   import { HeaderComponent, FooterComponent } from '~/components/common'
   import { mapGetters, mapActions } from 'vuex'
   import { beep } from '~/utils/utils'
+  import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
 
   const STATE = {
     WORKING: 0,
@@ -62,7 +64,9 @@
         showKittens: false,
         showKittensButtonText: 'Show me some kittens!',
         showWorkoutsButtonText: 'I wanna exercise!',
-        todolistvisible: true
+        todolistvisible: true,
+        loadingWorkoutImage: true,
+        loadedWorkoutImage: false
       }
     },
     computed: {
@@ -98,7 +102,8 @@
       HeaderComponent,
       CountDownTimer,
       KittensComponent,
-      ToDoList
+      ToDoList,
+      ClipLoader
     },
     methods: {
       ...mapActions(['updateTotalPomodoros']),
@@ -117,7 +122,11 @@
             this.state = this.pomodoros % this.config.pomodorosTillLongBreak === 0
               ? STATE.LONG_BREAK : STATE.SHORT_BREAK
             this.chosenWorkout = this.getRandomWorkout()
-            this.chosenWorkout.picture = this.chosenWorkout.pictures && this.chosenWorkout.pictures.length && this.chosenWorkout.pictures[0]
+            if (this.chosenWorkout.pictures && this.chosenWorkout.pictures.length) {
+              this.chosenWorkout.picture = this.chosenWorkout.pictures[0]
+              this.loadingWorkoutImage = true
+              this.loadedWorkoutImage = false
+            }
             alert('Time for exercise!')
             break
           default:
@@ -133,6 +142,10 @@
       },
       toggleToDoListVisible () {
         this.todolistvisible = !this.todolistvisible
+      },
+      handleLoadedImage () {
+        this.loadingWorkoutImage = false
+        this.loadedWorkoutImage = true
       }
     }
   }
