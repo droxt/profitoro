@@ -5,7 +5,7 @@
       <input v-model="searchTerm" class="input" type="search" placeholder="Search for workouts">
     </div>
     <div class="card-columns">
-      <div data-toggle="modal" data-target="#workoutModal" v-for="workout in workoutsToDisplay" class="card" @click="onChosenWorkout(workout)">
+      <div data-toggle="modal" data-target="#workoutModal" v-for="workout in workoutsToDisplayPaginated" class="card" @click="onChosenWorkout(workout)">
         <img class="card-img-top img-fluid" :src="workout.pictures && workout.pictures.length && workout.pictures[0]" :alt="workout.name">
         <div class="card-block">
           <p class="card-text">{{ workout.name }}</p>
@@ -20,11 +20,13 @@
       :pictures="pictures"
       :rate="rate">
     </workout-component>
+    <workouts-pagination-component @loadMore="onLoadMore" :hasMore="hasMore"></workouts-pagination-component>
   </div>
 </template>
 <script>
   import {mapState} from 'vuex'
   import WorkoutComponent from '~/components/workouts/WorkoutComponent'
+  import WorkoutsPaginationComponent from '~/components/workouts/WorkoutsPaginationComponent'
   import moment from 'moment'
 
   export default {
@@ -36,7 +38,9 @@
         description: '',
         pictures: [],
         rate: 0,
-        searchTerm: ''
+        searchTerm: '',
+        pageSize: 3,
+        actualWorkoutsSize: 3
       }
     },
     computed: {
@@ -49,10 +53,17 @@
           let term = this.searchTerm.toLowerCase()
           return name.indexOf(term) >= 0 || description.indexOf(term) >= 0 || username.indexOf(term) >= 0
         })
+      },
+      workoutsToDisplayPaginated () {
+        return this.workoutsToDisplay.slice(0, this.actualWorkoutsSize)
+      },
+      hasMore () {
+        return this.workoutsToDisplay.length > this.actualWorkoutsSize
       }
     },
     components: {
-      WorkoutComponent
+      WorkoutComponent,
+      WorkoutsPaginationComponent
     },
     methods: {
       onChosenWorkout (workout) {
@@ -62,6 +73,9 @@
         this.datecreated = moment(workout.date).format('MMM Do YY')
         this.rate = workout.rate
         this.pictures = workout.pictures
+      },
+      onLoadMore () {
+        this.actualWorkoutsSize = this.actualWorkoutsSize + this.pageSize
       }
     }
   }
