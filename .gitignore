@@ -15,6 +15,3 @@ dist
 
 # Stupid mac
 .DS_Store
-
-# yarn
-yarn.lock

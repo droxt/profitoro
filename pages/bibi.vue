@@ -2,37 +2,11 @@
   <div>
     <header-component></header-component>
     <div class="container min-full-height">
-      <div class="main-content row">
-        <div :class="[state != 0 || todolistvisible ? 'col-sm-12 col-md-6 col-lg-5' : 'col-2']">
-          <div v-if="state != 0">
-            <div v-if="!showKittens">
-              <img class="img-fluid rounded" :src="chosenWorkout.picture" :alt="chosenWorkout.name">
-              <h2 class="title">{{ chosenWorkout.name }}</h2>
-              <p class="description">
-                {{ chosenWorkout.description }}
-              </p>
-            </div>
-            <div v-if="showKittens">
-              <kittens-component></kittens-component>
-            </div>
-            <div v-if="!showKittens">
-              <button type="button" class="button button-primary">Done!</button>
-              <button type="button" class="button button-primary">Next</button>
-            </div>
-            <div class="lazy-section">
-              <h4 class="title">Feeling <span class="bold">{{ showKittens ? 'energetic' : 'lazy' }}</span>?</h4>
-              <button type="button" class="button button-primary-faded" @click="toggleKittens">{{ showKittens ? showWorkoutsButtonText : showKittensButtonText }}</button>
-            </div>
+      <div class="main-content row justify-content-center">
+        <div class="col-12 justify-content-center">
+          <div>
+            <kittens-component></kittens-component>
           </div>
-          <div v-if="state == 0">
-            <a class="profitoro-link" data-toggle="collapse" href="#todolist" aria-expanded="true" @click="toggleToDoListVisible">
-              {{ todolistvisible ? 'Hide ToDo List' : 'Show ToDo List'}}
-            </a>
-            <to-do-list class="collapse show" aria-expanded="true" id="todolist"></to-do-list>
-          </div>
-        </div>
-        <div class="countdown-holder" :class="[state != 0 || todolistvisible ? 'col-sm-12 col-md-6 col-lg-7' : 'col-12']">
-          <count-down-timer ref="countdowntimer" @finished="togglePomodoro" :time="time"></count-down-timer>
         </div>
       </div>
     </div>
@@ -42,7 +16,6 @@
 <script>
   import CountDownTimer from '~/components/timer/CountDownTimer'
   import KittensComponent from '~/components/timer/KittensComponent'
-  import ToDoList from '~/components/todos/ToDoList'
   import { HeaderComponent, FooterComponent } from '~/components/common'
   import { mapGetters, mapActions } from 'vuex'
   import { beep } from '~/utils/utils'
@@ -59,18 +32,14 @@
         pomodoros: 0,
         source: require('~/assets/images/pushups.png'),
         chosenWorkout: {name: '', description: '', picture: ''},
-        showKittens: false,
-        showKittensButtonText: 'Show me some kittens!',
-        showWorkoutsButtonText: 'I wanna exercise!',
-        todolistvisible: true
+        showKittens: true
       }
     },
     computed: {
       ...mapGetters({
         config: 'getConfig',
         totalPomodoros: 'getTotalPomodoros',
-        workouts: 'getWorkouts',
-        authenticated: 'isAuthenticated'
+        workouts: 'getWorkouts'
       }),
       time () {
         let minutes
@@ -97,8 +66,7 @@
       FooterComponent,
       HeaderComponent,
       CountDownTimer,
-      KittensComponent,
-      ToDoList
+      KittensComponent
     },
     methods: {
       ...mapActions(['updateTotalPomodoros']),
@@ -111,14 +79,12 @@
           case STATE.WORKING:
             // we have switched to the break state, increase the number of pomodoros and choose between long and short break
             this.pomodoros ++
-            if (this.authenticated) {
-              this.updateTotalPomodoros(this.totalPomodoros + 1)
-            }
+            this.updateTotalPomodoros(this.totalPomodoros + 1)
             this.state = this.pomodoros % this.config.pomodorosTillLongBreak === 0
               ? STATE.LONG_BREAK : STATE.SHORT_BREAK
             this.chosenWorkout = this.getRandomWorkout()
             this.chosenWorkout.picture = this.chosenWorkout.pictures && this.chosenWorkout.pictures.length && this.chosenWorkout.pictures[0]
-            alert('Time for exercise!')
+            alert('Time for kittens!')
             break
           default:
             // time to work!
@@ -127,12 +93,6 @@
             break
         }
         this.$refs.countdowntimer.start()
-      },
-      toggleKittens () {
-        this.showKittens = !this.showKittens
-      },
-      toggleToDoListVisible () {
-        this.todolistvisible = !this.todolistvisible
       }
     }
   }
@@ -162,14 +122,6 @@
 
     .title {
       font-size: $font-size-medium;
-    }
-  }
-  a.profitoro-link {
-    color: rgba(241,93,89,.7);
-    cursor: pointer;
-
-    &:active, &:hover {
-      color: rgb(241,93,89);
     }
   }
 </style>

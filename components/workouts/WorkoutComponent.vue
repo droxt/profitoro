@@ -10,9 +10,7 @@
         </div>
         <div class="modal-body">
           <div class="text-center">
-            <template v-show="pictures && pictures.length">
-              <img :src="pictures[0]" class="img-fluid" :alt="name">
-            </template>
+            <img :src="pictures && pictures.length && pictures[0]" class="img-fluid" :alt="name">
           </div>
           <p>{{ description }}</p>
         </div>
