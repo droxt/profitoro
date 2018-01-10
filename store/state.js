@@ -67,5 +67,6 @@ export default {
       progress: true,
       pomodoros: 0
     }
-  ]
+  ],
+  loading: {}
 }

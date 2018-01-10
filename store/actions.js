@@ -62,7 +62,10 @@ export default {
     }
     workingPomodoro = parseFloat(workingPomodoro)
     if (state.configRef) {
-      state.configRef.update({workingPomodoro})
+      commit('setLoading', {setWorkingPomodoro: true})
+      state.configRef.update({workingPomodoro}).then(
+        setTimeout(() => commit('setLoading', {setWorkingPomodoro: false}), 2000)
+      )
     } else {
       commit('setWorkingPomodoro', workingPomodoro)
     }
@@ -78,7 +81,10 @@ export default {
     }
     shortBreak = parseFloat(shortBreak)
     if (state.configRef) {
-      state.configRef.update({shortBreak})
+      commit('setLoading', {setShortBreak: true})
+      state.configRef.update({shortBreak}).then(
+        setTimeout(() => commit('setLoading', {setShortBreak: false}), 2000)
+      )
     } else {
       commit('setShortBreak', shortBreak)
     }
@@ -94,7 +100,10 @@ export default {
     }
     longBreak = parseFloat(longBreak)
     if (state.configRef) {
-      state.configRef.update({longBreak})
+      commit('setLoading', {setLongBreak: true})
+      state.configRef.update({longBreak}).then(
+       setTimeout(() => commit('setLoading', {setLongBreak: false}), 2000)
+      )
     } else {
       commit('setLongBreak', longBreak)
     }
@@ -295,5 +304,8 @@ export default {
   },
   clearDoneTodos ({ commit, getters }) {
     commit('clearToDos', getters.doneTodos)
+  },
+  setLoading ({commit}, loading) {
+    commit('setLoading', loading)
   }
 }

@@ -48,5 +48,8 @@ export default {
   },
   clearToDos (state, todos) {
     state.todos = _.without(state.todos, ...todos)
+  },
+  setLoading (state, loading) {
+    state.loading = {...state.loading, ...loading}
   }
 }
