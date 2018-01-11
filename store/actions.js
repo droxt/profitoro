@@ -1,6 +1,7 @@
 import firebaseApp from '~/firebaseapp'
 import {firebaseAction} from 'vuexfire'
 import uuidv1 from 'uuid/v1'
+import {camelize} from '~/utils/utils'
 
 /**
  * Uploads individual file
@@ -51,63 +52,28 @@ export default {
 
     return firebaseApp.database().ref().update(updates)
   },
+
   /**
-   * Sets the working pomodoro timer
+   * Sets the pomodoro timer
    * @param {object} store
-   * @param {number} workingPomodoro
+   * @param {string} set
+   * @param {number} value
    */
-  setWorkingPomodoro ({commit, state}, workingPomodoro) {
-    if (!workingPomodoro) {
+  setPomodoro ({commit, state}, {set, value}) {
+    if (!value) {
       return
     }
-    workingPomodoro = parseFloat(workingPomodoro)
+    value = parseFloat(value)
     if (state.configRef) {
-      commit('setLoading', {setWorkingPomodoro: true})
-      state.configRef.update({workingPomodoro}).then(
-        setTimeout(() => commit('setLoading', {setWorkingPomodoro: false}), 2000)
+      commit('setLoading', {[set]: true})
+      state.configRef.update({[camelize(set.replace('set', ''))]: value}).then(
+        setTimeout(() => commit('setLoading', {[set]: false}), 2000)
       )
     } else {
-      commit('setWorkingPomodoro', workingPomodoro)
+      commit('setPomodoro', set, value)
     }
   },
-  /**
-   * Sets the short break pomodoro configuration
-   * @param {object} store
-   * @param {number} shortBreak
-   */
-  setShortBreak ({commit, state}, shortBreak) {
-    if (!shortBreak) {
-      return
-    }
-    shortBreak = parseFloat(shortBreak)
-    if (state.configRef) {
-      commit('setLoading', {setShortBreak: true})
-      state.configRef.update({shortBreak}).then(
-        setTimeout(() => commit('setLoading', {setShortBreak: false}), 2000)
-      )
-    } else {
-      commit('setShortBreak', shortBreak)
-    }
-  },
-  /**
-   * Sets the long break pomodoro configuration
-   * @param {object} store
-   * @param {number} longBreak
-   */
-  setLongBreak ({commit, state}, longBreak) {
-    if (!longBreak) {
-      return
-    }
-    longBreak = parseFloat(longBreak)
-    if (state.configRef) {
-      commit('setLoading', {setLongBreak: true})
-      state.configRef.update({longBreak}).then(
-       setTimeout(() => commit('setLoading', {setLongBreak: false}), 2000)
-      )
-    } else {
-      commit('setLongBreak', longBreak)
-    }
-  },
+
   /**
    * Updates the total pomodoro number
    * @param {object} store

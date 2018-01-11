@@ -1,22 +1,14 @@
 <template>
   <div class="container">
-    <h2 class="title text-center mb-5">Set your pomodoro timer</h2>
+    <h2 class="title text-center mb-5">Set your pomodoro timer</h2>    
     <div class="mt-5 row justify-content-center align-items-center">
-      <div class="set-timer-container col-sm-8 col-md-5">
-        <clip-loader v-show="loading.setWorkingPomodoro"></clip-loader>
-        <set-timer class="set-timer set-timer-1" v-show="!loading.setWorkingPomodoro" :value="config.workingPomodoro" @valueChanged="setWorkingPomodoro"></set-timer>
-        <div class="figure-caption">Pomodoro</div>
-      </div>
-      <div class="set-timer-container col-sm-8 col-md-4">
-        <clip-loader v-show="loading.setLongBreak"></clip-loader>
-        <set-timer class="set-timer set-timer-2" v-show="!loading.setLongBreak" :value="config.longBreak" @valueChanged="setLongBreak"></set-timer>
-        <div class="figure-caption">Long break</div>
-      </div>
-      <div class="set-timer-container col-sm-8 col-md-3">
-        <clip-loader v-show="loading.setShortBreak"></clip-loader>
-        <set-timer class="set-timer set-timer-3" v-show="!loading.setShortBreak" :value="config.shortBreak" @valueChanged="setShortBreak"></set-timer>
-        <div class="figure-caption">Short break</div>
-      </div>
+      <template v-for="tconfig in timerConfig">
+        <div :class="'set-timer-container col-sm-8 col-md-' + tconfig.size " :key="tconfig.size">
+          <clip-loader v-show="isLoading(tconfig.set)" />
+          <set-timer class="set-timer set-timer-1" v-show="!isLoading(tconfig.set)" :value="getConfigSet(tconfig.set)" @valueChanged="value => actionSet(tconfig.set, value)"></set-timer>
+            <div class="figure-caption">{{ tconfig.set }}</div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -25,7 +17,17 @@
   import SvgCircleSector from '~/components/timer/SvgCircleSector'
   import SetTimer from '~/components/settings/SetTimer'
   import ClipLoader from 'vue-spinner/src/ClipLoader.vue'
+  import { camelize } from '~/utils/utils'
   export default {
+    data () {
+      return {
+        timerConfig: [
+          {size: 5, set: 'Working Pomodoro'},
+          {size: 4, set: 'Long Break'},
+          {size: 3, set: 'Short Break'}
+        ]
+      }
+    },
     computed: {
       ...mapGetters({
         config: 'getConfig'
@@ -38,7 +40,14 @@
       ClipLoader
     },
     methods: {
-      ...mapActions(['setWorkingPomodoro', 'setShortBreak', 'setLongBreak'])
+      ...mapActions(['setPomodoro']),
+      camelize: camelize,
+      isLoading (set) { return this.loading[this.getActionSet(set)] },
+      getActionSet (set) { return 'set' + set.replace(' ', '') },
+      getConfigSet (set) { return this.config[this.camelize(set)] },
+      actionSet (set, value) {
+        this.setPomodoro({set: this.getActionSet(set), value})
+      }
     }
   }
 </script>
