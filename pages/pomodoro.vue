@@ -106,7 +106,7 @@
       ClipLoader
     },
     methods: {
-      ...mapActions(['updateTotalPomodoros']),
+      ...mapActions(['updateTotalPomodoros', 'saveWorkoutStats']),
       getRandomWorkout () {
         return this.workouts[Math.floor(Math.random() * this.workouts.length)]
       },
@@ -126,6 +126,7 @@
               this.chosenWorkout.picture = this.chosenWorkout.pictures[0]
               this.loadingWorkoutImage = true
               this.loadedWorkoutImage = false
+              this.saveWorkoutStats(this.chosenWorkout)
             }
             alert('Time for exercise!')
             break
