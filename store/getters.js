@@ -5,6 +5,11 @@ export default {
   getUser: state => state.user,
   getDisplayName: state => state.displayName,
   getWorkouts: state => state.workouts,
+  getWorkoutsDone: state => state.statistics.workouts ? Object.keys(state.statistics.workouts).map(workoutKey => ({
+    key: workoutKey,
+    count: state.statistics.workouts[workoutKey],
+    name: state.workouts && state.workouts.filter(workout => workoutKey === workout['.key'])[0].name
+  })) : [],
   getTotalPomodoros: state => state.statistics.totalPomodoros,
   isAuthenticated: state => state.user && !state.user.isAnonymous,
   authError: state => state.authError,
