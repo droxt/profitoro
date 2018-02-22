@@ -122,11 +122,11 @@
             this.state = this.pomodoros % this.config.pomodorosTillLongBreak === 0
               ? STATE.LONG_BREAK : STATE.SHORT_BREAK
             this.chosenWorkout = this.getRandomWorkout()
+            this.saveWorkoutStats({workout: this.chosenWorkout, time: this.time})
             if (this.chosenWorkout.pictures && this.chosenWorkout.pictures.length) {
               this.chosenWorkout.picture = this.chosenWorkout.pictures[0]
               this.loadingWorkoutImage = true
               this.loadedWorkoutImage = false
-              this.saveWorkoutStats(this.chosenWorkout)
             }
             alert('Time for exercise!')
             break

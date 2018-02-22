@@ -98,13 +98,20 @@ export default {
    * @param {object} store
    * @param {number} totalPomodoros
    */
-  saveWorkoutStats ({ state }, workout) {
-    // debugger // eslint-disable-line
-    state.statisticsRef.child('workouts/' + workout['.key']).transaction(count => {
-      if (!count) {
-        count = 0
+  saveWorkoutStats ({ state }, {workout, time}) {
+    console.log('****', time)
+    state.statisticsRef.child('workouts/' + workout['.key']).transaction(wk => {
+      if (!wk) {
+        wk = {
+          count: 0,
+          time: 0,
+          exercises: []
+        }
       }
-      return count + 1
+      wk.count = wk.count + 1
+      wk.time = wk.time + time
+      wk.exercises.push(Date.now())
+      return wk
     })
   },
 

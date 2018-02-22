@@ -7,9 +7,10 @@ export default {
   getWorkouts: state => state.workouts,
   getWorkoutsDone: state => state.statistics.workouts ? Object.keys(state.statistics.workouts).map(workoutKey => ({
     key: workoutKey,
-    count: state.statistics.workouts[workoutKey],
+    count: state.statistics.workouts[workoutKey].count,
     name: state.workouts && state.workouts.filter(workout => workoutKey === workout['.key'])[0].name
   })) : [],
+  getWorkoutsDoneDetails: state => key => state.statistics.workouts && state.statistics.workouts[key],
   getTotalPomodoros: state => state.statistics.totalPomodoros,
   isAuthenticated: state => state.user && !state.user.isAnonymous,
   authError: state => state.authError,
