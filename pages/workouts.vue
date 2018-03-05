@@ -7,7 +7,8 @@
           <workouts-component></workouts-component>
         </div>
         <div class="section-right col-sm-12 col-md-6 col-lg-6 float-right">
-          <new-workout-component></new-workout-component>
+          <new-workout-component v-if="mode.state === 'add'"/>
+          <modify-workout-component v-if="mode.state === 'edit'" />
         </div>
       </div>
     </div>
@@ -16,14 +17,18 @@
 </template>
 <script>
   import { HeaderComponent, FooterComponent } from '~/components/common'
-  import { NewWorkoutComponent, WorkoutComponent, WorkoutsComponent } from '~/components/workouts'
+  import { NewWorkoutComponent, ModifyWorkoutComponent, WorkoutsComponent } from '~/components/workouts'
+  import { mapGetters } from 'vuex'
   export default {
     middleware: 'authenticated',
+    computed: {
+      ...mapGetters({mode: 'getMode'})
+    },
     components: {
       HeaderComponent,
       FooterComponent,
       NewWorkoutComponent,
-      WorkoutComponent,
+      ModifyWorkoutComponent,
       WorkoutsComponent
     }
   }

@@ -11,6 +11,8 @@ const statisticsRef = null
 const workoutsRef = null
 const displayName = ''
 
+const mode = {state: 'add', workout: null}
+
 const statistics = {
   pomodorosToday: 0,
   pomodorosLastWeek: 0,
@@ -32,6 +34,7 @@ export default {
   displayName,
   workouts: [],
   authError: '',
+  mode,
   todos: [
     {
       description: 'Start using ToDo list',

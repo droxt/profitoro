@@ -62,7 +62,37 @@ export default {
       .ref()
       .update(updates)
   },
+/**
+   * Update workout
+   * @param commit
+   * @param state
+   * @param workout
+   */
+  modifyWorkout ({ commit, state }, {workout, picUrls}) {
+    if (!workout) {
+      return
+    }
 
+    workout = {...workout, key: workout['.key']}
+
+    if (picUrls.length > 0) {
+      workout.pictures = picUrls
+    }
+
+    delete workout['.key']
+
+    workout.date = Date.now()
+
+    // Write the new post's data simultaneously in the posts list and the user's post list.
+    let updates = {}
+    updates['/workouts/' + workout.key] = workout
+    updates['/user-workouts/' + state.user.uid + '/' + workout.key] = workout
+
+    return firebaseApp
+      .database()
+      .ref()
+      .update(updates)
+  },
   /**
    * Sets the pomodoro timer
    * @param {object} store
@@ -331,5 +361,9 @@ export default {
   },
   setLoading ({ commit }, loading) {
     commit('setLoading', loading)
+  },
+  setMode ({commit}, mode) {
+    commit('setMode', mode)
   }
+
 }

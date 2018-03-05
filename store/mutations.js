@@ -45,5 +45,8 @@ export default {
   },
   setLoading (state, loading) {
     state.loading = {...state.loading, ...loading}
+  },
+  setMode (state, mode) {
+    state.mode = mode
   }
 }
