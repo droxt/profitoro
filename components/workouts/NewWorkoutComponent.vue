@@ -5,7 +5,9 @@
         <input v-model="name" type="text" class="input" placeholder="Name it">
         <textarea v-model="description" type="text" class="input" placeholder="Describe it"></textarea>
         <div class="image-upload">
-          <label class="title" for="imageFile">Add an image</label>
+          <label class="title" for="imageFile">Add images</label>
+          <br>
+          <output id="images-to-upload"></output>
           <input @change="filesChange($event.target.files)" type="file" multiple class="form-control-file" ref="imageFile">
         </div>
         <div class="row">
@@ -35,11 +37,20 @@
       ...mapActions(['createNewWorkout', 'uploadImages']),
       filesChange (files) {
         this.pictures = [...files]
+        document.getElementById('images-to-upload').innerHTML = ''
+        for (let i = 0; i < files.length; i++) {
+          var reader = new FileReader()
+          reader.onload = (event) => {
+            document.getElementById('images-to-upload').innerHTML += '<img style="width: 30%; margin: 2.5% 2.5%; border: 1px solid lightgrey; border-radius: 2.5px;" src="' + event.target.result + '"/>'
+          }
+          reader.readAsDataURL(files[i])
+        }
       },
       reset () {
         this.name = ''
         this.description = ''
         this.pictures = []
+        document.getElementById('images-to-upload').innerHTML = ''
         this.$refs.imageFile.value = null
       },
       onCancel (ev) {

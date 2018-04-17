@@ -2,45 +2,37 @@
   <div>
     <h2 class="title">Manage your workouts</h2>
     <div class="form-group">
-      <input v-model="searchTerm" class="input" type="search" placeholder="Search for workouts">
+      <input :disabled="wMode == 'modify' ? true : false" v-model="searchTerm" class="input" type="search" placeholder="Search for workouts">
     </div>
     <div class="card-columns">
-      <div data-toggle="modal" data-target="#workoutModal" v-for="workout in workoutsToDisplayPaginated" class="card" @click="onChosenWorkout(workout)">
+      <div v-for="workout in workoutsToDisplayPaginated" :key="workout['.key']" :class="selected == workout['.key'] ? ['card', 'maximizedCard'] :  selected == '' ? 'card' : ['card', 'minimizedCard']" @click="selectedWorkout(workout)">
         <img class="card-img-top img-fluid" :src="workout.pictures && workout.pictures.length && workout.pictures[0]" :alt="workout.name">
         <div class="card-block">
           <p class="card-text">{{ workout.name }}</p>
         </div>
+          <button class="delete" v-show="wMode == 'add' ? true : false" @click="deleteTheWorkout(workout)"><span>&#735;</span></button>
       </div>
     </div>
-    <workout-component
-      :name="name"
-      :description="description"
-      :username="username"
-      :datecreated="datecreated"
-      :pictures="pictures"
-      :rate="rate">
-    </workout-component>
     <workouts-pagination-component @loadMore="onLoadMore" :hasMore="hasMore"></workouts-pagination-component>
   </div>
 </template>
 <script>
-  import {mapState} from 'vuex'
-  import WorkoutComponent from '~/components/workouts/WorkoutComponent'
+  import {mapState, mapActions} from 'vuex'
   import WorkoutsPaginationComponent from '~/components/workouts/WorkoutsPaginationComponent'
-  import moment from 'moment'
 
   export default {
+    props: ['wMode'],
     data () {
       return {
-        name: '',
-        username: '',
-        datecreated: '',
-        description: '',
-        pictures: [],
-        rate: 0,
+        selected: '',
         searchTerm: '',
         pageSize: 3,
         actualWorkoutsSize: 3
+      }
+    },
+    watch: {
+      wMode: function (val) {
+        val === 'add' ? this.selected = '' : false
       }
     },
     computed: {
@@ -62,17 +54,17 @@
       }
     },
     components: {
-      WorkoutComponent,
       WorkoutsPaginationComponent
     },
     methods: {
-      onChosenWorkout (workout) {
-        this.name = workout.name
-        this.description = workout.description
-        this.username = workout.username
-        this.datecreated = moment(workout.date).format('MMM Do YY')
-        this.rate = workout.rate
-        this.pictures = workout.pictures
+      ...mapActions(['deleteWorkout']),
+      selectedWorkout (workout) {
+        this.selected = workout['.key']
+        this.$emit('selectedWorkout', workout)
+      },
+      deleteTheWorkout (workout) {
+        event.stopPropagation()
+        this.deleteWorkout(workout)
       },
       onLoadMore () {
         this.actualWorkoutsSize = this.actualWorkoutsSize + this.pageSize
@@ -86,7 +78,49 @@
   @import "../../assets/styles/vendors/bootstrap/mixins";
   .card-columns {
     .card {
+      position: relative;
+      transition: width 500ms;
+      transition: padding 500ms;
       cursor: pointer;
+      border: none;
+    }
+    .card:hover {
+      .delete {
+        visibility: visible;
+        opacity: 1;
+        cursor: pointer;
+      }
+    }
+    .maximizedCard {
+      width: 105%;
+      padding: -10% 0% 0% -10%;
+      font-size: 1.1em;
+    }
+    .minimizedCard {
+      width: 95%;
+      padding: 10% 0% 0% 10%;
+      filter: opacity(0.5);
+    }
+    .delete {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 2.5%;
+      width: 12%;
+      height: 15%;
+      padding: 0;
+      border: none;
+      border-radius: 5px;
+      background-color: rgba(225, 225, 225, .9);
+      transition: opacity 250ms, visibility 250ms;
+      span {
+        display: block;
+        margin-top: -115%;
+        font-size: 3.45em;
+        color: grey;
+      }
     }
     @include media-breakpoint-only(lg) {
       column-count: 3;

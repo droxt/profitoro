@@ -64,6 +64,50 @@ export default {
   },
 
   /**
+   * Updates an existing workout
+   * @param commit
+   * @param state
+   * @param workout
+   */
+  updateWorkout ({ commit, state }, workout) {
+    workout.date = Date.now()
+    // Get the wotkout key.
+    let workoutKey = workout['.key']
+    let updates = {}
+    updates['/workouts/' + workoutKey + '/name'] = workout.name
+    updates['/workouts/' + workoutKey + '/description'] = workout.description
+    updates['/workouts/' + workoutKey + '/pictures'] = workout.pictures
+    updates['/workouts/' + workoutKey + '/date'] = workout.date
+    updates['/user-workouts/' + state.user.uid + '/' + workoutKey + '/name'] = workout.name
+    updates['/user-workouts/' + state.user.uid + '/' + workoutKey + '/description'] = workout.description
+    updates['/user-workouts/' + state.user.uid + '/' + workoutKey + '/pictures'] = workout.pictures
+    updates['/user-workouts/' + state.user.uid + '/' + workoutKey + '/date'] = workout.date
+
+    return firebaseApp
+      .database()
+      .ref()
+      .update(updates)
+  },
+  /**
+  * Deletes a workout
+  * @param commit
+  * @param state
+  * @param workout
+  */
+  deleteWorkout ({ commit, state }, workout) {
+    if (!workout) {
+      return
+    }
+    let updates = {}
+    updates['/workouts/' + workout['.key']] = null
+    updates['/user-workouts/' + state.user.uid + '/' + workout['.key']] = null
+
+    return firebaseApp
+      .database()
+      .ref()
+      .update(updates)
+  },
+  /**
    * Sets the pomodoro timer
    * @param {object} store
    * @param {string} set
