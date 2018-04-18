@@ -7,7 +7,7 @@
         <div class="image-upload">
           <label class="title" for="imageFile">Add images</label>
           <br>
-          <output id="images-to-upload"></output>
+          <img v-for="pic in shownPics" :key="pic" style="width: 30%; margin: 2.5% 2.5%; border: 1px solid lightgrey; border-radius: 2.5px;" :src="pic"/>
           <input @change="filesChange($event.target.files)" type="file" multiple class="form-control-file" ref="imageFile">
         </div>
         <div class="row">
@@ -30,18 +30,19 @@
         name: '',
         description: '',
         pictures: [],
+        shownPics: [],
         isCreating: false
       }
     },
     methods: {
       ...mapActions(['createNewWorkout', 'uploadImages']),
       filesChange (files) {
-        this.pictures = [...files]
-        document.getElementById('images-to-upload').innerHTML = ''
+        this.pictures += [...files]
+        const self = this
         for (let i = 0; i < files.length; i++) {
           var reader = new FileReader()
           reader.onload = (event) => {
-            document.getElementById('images-to-upload').innerHTML += '<img style="width: 30%; margin: 2.5% 2.5%; border: 1px solid lightgrey; border-radius: 2.5px;" src="' + event.target.result + '"/>'
+            self.shownPics[i] = event.target.result
           }
           reader.readAsDataURL(files[i])
         }
@@ -50,7 +51,7 @@
         this.name = ''
         this.description = ''
         this.pictures = []
-        document.getElementById('images-to-upload').innerHTML = ''
+        this.shownPics = []
         this.$refs.imageFile.value = null
       },
       onCancel (ev) {
