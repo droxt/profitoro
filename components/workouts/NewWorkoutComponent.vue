@@ -7,7 +7,9 @@
         <div class="image-upload">
           <label class="title" for="imageFile">Add images</label>
           <br>
-          <img v-for="pic in shownPics" :key="pic" style="width: 30%; margin: 2.5% 2.5%; border: 1px solid lightgrey; border-radius: 2.5px;" :src="pic"/>
+          <div class="images-container">
+            <img v-for="(pic, key) in shownPics" :key="key" :src="pic" class="images-to-upload">
+          </div>
           <input @change="filesChange($event.target.files)" type="file" multiple class="form-control-file" ref="imageFile">
         </div>
         <div class="row">
@@ -37,12 +39,12 @@
     methods: {
       ...mapActions(['createNewWorkout', 'uploadImages']),
       filesChange (files) {
-        this.pictures += [...files]
+        this.pictures.push(...files)
         const self = this
         for (let i = 0; i < files.length; i++) {
           var reader = new FileReader()
           reader.onload = (event) => {
-            self.shownPics[i] = event.target.result
+            self.shownPics.push(event.target.result)
           }
           reader.readAsDataURL(files[i])
         }
@@ -84,5 +86,18 @@
 <style scoped lang="scss">
   .image-upload {
     margin: 40px 0;
+  }
+
+  .images-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+
+  .images-to-upload {
+    margin: 5px;
+    border-radius: 2.5px;
+    width: 25%;
   }
 </style>

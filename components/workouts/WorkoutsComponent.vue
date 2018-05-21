@@ -10,7 +10,7 @@
         <div class="card-block">
           <p class="card-text">{{ workout.name }}</p>
         </div>
-          <button class="delete" v-show="wMode == 'add' ? true : false" @click="deleteTheWorkout(workout)"><span>&#735;</span></button>
+          <button class="delete" v-show="wMode == 'add' ? true : false" @click="deleteTheWorkout(workout)">✗</button>
       </div>
     </div>
     <workouts-pagination-component @loadMore="onLoadMore" :hasMore="hasMore"></workouts-pagination-component>
@@ -79,8 +79,8 @@
   .card-columns {
     .card {
       position: relative;
-      transition: width 500ms;
-      transition: padding 500ms;
+      transition: 500ms;
+      transition-property: width, padding, filter, font-size;
       cursor: pointer;
       border: none;
     }
@@ -101,27 +101,22 @@
       padding: 10% 0% 0% 10%;
       filter: opacity(0.5);
     }
-    .delete {
-      visibility: hidden;
-      opacity: 0;
+    .delete {    
       position: absolute;
       top: 0;
       right: 0;
       margin: 2.5%;
-      width: 12%;
-      height: 15%;
-      padding: 0;
+      padding: 0px 5px;
+      visibility: hidden;
+      opacity: 0;
       border: none;
       border-radius: 5px;
+      font-size: 1em;
+      color: grey;
       background-color: rgba(225, 225, 225, .9);
-      transition: opacity 250ms, visibility 250ms;
-      span {
-        display: block;
-        margin-top: -115%;
-        font-size: 3.45em;
-        color: grey;
-      }
-    }
+      transition: 250ms;
+      transition-property: opacity, visibility;
+  }
     @include media-breakpoint-only(lg) {
       column-count: 3;
     }

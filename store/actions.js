@@ -71,7 +71,6 @@ export default {
    */
   updateWorkout ({ commit, state }, workout) {
     workout.date = Date.now()
-    // Get the wotkout key.
     let workoutKey = workout['.key']
     let updates = {}
     updates['/workouts/' + workoutKey + '/name'] = workout.name

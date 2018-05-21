@@ -5,11 +5,21 @@
         <input v-model="name" type="text" class="input" placeholder="Name it">
         <textarea v-model="description" type="text" class="input" placeholder="Describe it"></textarea>
         <div class="image-upload">
-          <div class="uploaded-images">
-            <img :src="this.pictures[0]" style="width: 35%; border-radius: 2.5px">
+            <div class="images-container">
+              <div class="img-container" v-for="(img, key) in pictures" :key="key">
+                <img :src="img" class="img">
+                <button class="delete" @click="deleteImageFromDB(key)">✗</button>
+              </div>
           </div>
-          <label class="title" for="imageFile">Replace the image</label>
-          <input @change="filesChange($event.target.files)" type="file" multiple class="form-control-file" ref="imageFile">
+          <label class="title" for="imageFile">Add images</label>
+        
+        <div class="images-container">
+          <div class="img-container" v-for="(newPic, key) in shownNewPictures" :key="key">
+            <img :src="newPic" class="img">
+            <button class="delete" @click="deleteNewImage(key)">✗</button>
+          </div>
+        </div>
+        <input @change="filesChange($event.target.files)" type="file" multiple class="form-control-file" ref="imageFile">
         </div>
         <div class="row">
           <div class="col">
@@ -57,6 +67,7 @@
         description: this.workout.description,
         pictures: this.workout.pictures,
         newPictures: [],
+        shownNewPictures: [],
         isUpdating: false
       }
     },
@@ -73,7 +84,15 @@
     methods: {
       ...mapActions(['updateWorkout', 'uploadImages']),
       filesChange (files) {
-        this.newPictures = [...files]
+        this.newPictures.push(...files)
+        const self = this
+        for (let i = 0; i < files.length; i++) {
+          var reader = new FileReader()
+          reader.onload = (event) => {
+            self.shownNewPictures.push(event.target.result)
+          }
+          reader.readAsDataURL(files[i])
+        }
       },
       update (ev) {
         this.isUpdating = true
@@ -83,8 +102,8 @@
         workoutToUpdate.description = this.description
         if (this.newPictures.length > 0) {
           this.uploadImages(this.newPictures).then(picUrls => {
-            workoutToUpdate.pictures = picUrls
-            this.updateWorkout(workoutToUpdate).then(() => {}).then(() => {
+            workoutToUpdate.pictures = this.pictures + [...picUrls]
+            this.updateWorkout(workoutToUpdate).then(() => {
               this.isUpdating = false
               this.$emit('busy', false)
               this.toggleBack()
@@ -103,6 +122,7 @@
         this.description = ''
         this.pictures = []
         this.newPictures = []
+        this.shownNewPictures = []
         this.$emit('toggleBack')
       }
     }
@@ -111,5 +131,49 @@
 <style scoped lang="scss">
   .image-upload {
     margin: 40px 0;
+  }
+
+  .images-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+
+  .img-container {
+    position: relative;
+    width: 25%;    
+    margin: 5px;
+  }
+
+  .img {
+    width: 100%;
+    border-radius: 2.5px;
+  }
+
+  .delete {    
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 2.5%;
+    padding: 0px 5px;
+    visibility: hidden;
+    opacity: 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    color: grey;
+    background-color: rgba(225, 225, 225, .9);
+    transition: 250ms;
+    transition-property: opacity, visibility;
+  }
+
+  .img-container:hover {
+      .delete {
+        visibility: visible;
+        opacity: 1;
+        cursor: pointer;
+      }
   }
 </style>
